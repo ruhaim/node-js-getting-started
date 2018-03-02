@@ -30,3 +30,24 @@ app = express()
 	})
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
+  //SELECT * FROM public.books
+  
+  //INSERT INTO public.books(
+	//"bookID", "bookName", "bookAuthor", "bookYear", "bookPrice")
+	//VALUES (?, ?, ?, ?, ?);
+	
+//Host
+//ec2-54-243-239-66.compute-1.amazonaws.com
+//Database
+//d7ob7gfv5p3kcq
+//User
+//lodoogsrewuqnk
+//Port
+//5432
+//Password
+//f4bfa87e2c13e2ff246cd28baf9e8e828b5bf55763240756d217b099ecba510a
+//URI
+//postgres://lodoogsrewuqnk:f4bfa87e2c13e2ff246cd28baf9e8e828b5bf55763240756d217b099ecba510a@ec2-54-243-239-66.compute-1.amazonaws.com:5432/d7ob7gfv5p3kcq
+//Heroku CLI
+//heroku pg:psql postgresql-round-12981 --app sheltered-gorge-85466
+	
