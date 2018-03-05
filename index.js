@@ -37,17 +37,20 @@ app = express()
     });
   })
   .get("/api/get_booksp", function (request, response) {
-    pool.query("SELECT * FROM public.books", (err, result)=>{
-      pool.end();
-      if (err) {
-        console.error(err);
-        response.send("Error " + err);
-      } else {
-        //response.render("pages/db", { results: result.rows });
-        response.setHeader("Content-Type", "application/json");
-        response.send(JSON.stringify({ result: result.rows }));
-      }
-    });
+    pool.connect()
+      .then(client => {
+        return client.query('SELECT * FROM public.books')
+          .then(res => {
+            client.release();
+            response.setHeader("Content-Type", "application/json");
+            response.send(JSON.stringify({ result: res.rows }));
+          })
+          .catch(e => {
+            client.release();
+            console.error(e);
+            response.send("Error " + e);
+          })
+      })
 
   })
   .get("/api/get_books", function(request, response) {
