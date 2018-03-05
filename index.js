@@ -36,24 +36,8 @@ app = express()
       });
     });
   })
-  .get("/api/get_booksp", function (request, response) {
-    pool.connect()
-      .then(client => {
-        return client.query('SELECT * FROM public.books')
-          .then(res => {
-            client.release();
-            response.setHeader("Content-Type", "application/json");
-            response.send(JSON.stringify({ result: res.rows }));
-          })
-          .catch(e => {
-            client.release();
-            console.error(e);
-            response.send("Error " + e);
-          })
-      })
 
-  })
-  .get("/api/get_books", function(request, response) {
+  .get("/api/get_booksp", function(request, response) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
       client.query("SELECT * FROM public.books", function(err, result) {
         done();
@@ -66,51 +50,81 @@ app = express()
           response.send(JSON.stringify({ result: result.rows }));
         }
       });
+    });
+  })
+  .get("/api/get_books", function(request, response) {
+    pool.connect().then(client => {
+      return client
+        .query("SELECT * FROM public.books")
+        .then(res => {
+          client.release();
+          response.setHeader("Content-Type", "application/json");
+          response.send(JSON.stringify({ result: res.rows }));
+        })
+        .catch(e => {
+          client.release();
+          console.error(e);
+          response.send("Error " + e);
+        });
     });
   })
   .get("/api/add_book", function(request, response) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query("SELECT * FROM public.books", function(err, result) {
-        done();
-        if (err) {
-          console.error(err);
-          response.send("Error " + err);
-        } else {
-          //response.render("pages/db", { results: result.rows });
+    pool.connect().then(client => {
+      return client
+        .query(
+          `INSERT INTO public.books(
+	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
+	              VALUES (?, ?, ?, ?, ?);`
+        )
+        .then(res => {
+          client.release();
           response.setHeader("Content-Type", "application/json");
-          response.send(JSON.stringify({ result: result.rows }));
-        }
-      });
+          response.send(JSON.stringify({ result: res.rows }));
+        })
+        .catch(e => {
+          client.release();
+          console.error(e);
+          response.send("Error " + e);
+        });
     });
   })
   .get("/api/edit_book", function(request, response) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query("SELECT * FROM public.books", function(err, result) {
-        done();
-        if (err) {
-          console.error(err);
-          response.send("Error " + err);
-        } else {
-          //response.render("pages/db", { results: result.rows });
+    pool.connect().then(client => {
+      return client
+        .query(
+          `UPDATE public.books
+	            SET "bookName"=?, "bookAuthor"=?, "bookYear"=?, "bookPrice"=?, "bookID"=?
+	            WHERE <condition>;`
+        )
+        .then(res => {
+          client.release();
           response.setHeader("Content-Type", "application/json");
-          response.send(JSON.stringify({ result: result.rows }));
-        }
-      });
+          response.send(JSON.stringify({ result: res.rows }));
+        })
+        .catch(e => {
+          client.release();
+          console.error(e);
+          response.send("Error " + e);
+        });
     });
   })
   .get("/api/delete_book", function(request, response) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-      client.query("SELECT * FROM public.books", function(err, result) {
-        done();
-        if (err) {
-          console.error(err);
-          response.send("Error " + err);
-        } else {
-          //response.render("pages/db", { results: result.rows });
+    pool.connect().then(client => {
+      return client
+        .query(
+          `DELETE FROM public.books
+	              WHERE <condition>;`
+        )
+        .then(res => {
+          client.release();
           response.setHeader("Content-Type", "application/json");
-          response.send(JSON.stringify({ result: result.rows }));
-        }
-      });
+          response.send(JSON.stringify({ result: res.rows }));
+        })
+        .catch(e => {
+          client.release();
+          console.error(e);
+          response.send("Error " + e);
+        });
     });
   })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
