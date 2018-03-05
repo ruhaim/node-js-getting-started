@@ -73,18 +73,19 @@ app = express()
   })
   .get("/api/add_book", function(request, response) {
     pool.connect().then(client => {
+      const newUuid = uuidv4();
       console.log(request.body);
       return client
         .query(
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
 	              VALUES ($1, $2, $3, $4, $5) RETURNING bookID;`,
-          ['some name', 'no name', 2016, 65.09, uuidv4()]
+          ['some name', 'no name', 2016, 65.09, newUuid]
         )
         .then(res => {
           client.release();
           response.setHeader("Content-Type", "application/json");
-          response.send(JSON.stringify({ result: res.rows }));
+          response.send(JSON.stringify({ result: newUuid }));
         })
         .catch(e => {
           client.release();
