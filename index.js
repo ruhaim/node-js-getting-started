@@ -3,8 +3,8 @@ const express = require("express");
 const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
-const bodyParser = require('body-parser');
-const uuidv4 = require('uuid/v4');
+const bodyParser = require("body-parser");
+const uuidv4 = require("uuid/v4");
 
 const { Pool, Client } = require("pg");
 const connectionString = process.env.DATABASE_URL;
@@ -71,7 +71,7 @@ app = express()
         });
     });
   })
-  .get("/api/add_book", function(request, response) {
+  .post("/api/add_book", function(request, response) {
     pool.connect().then(client => {
       const newUuid = uuidv4();
       console.log(request.body);
@@ -80,7 +80,7 @@ app = express()
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
 	              VALUES ($1, $2, $3, $4, $5);`,
-          ['some name', 'no name', 2016, 65.09, newUuid]
+          ["some name", "no name", 2016, 65.09, newUuid]
         )
         .then(res => {
           client.release();
@@ -116,13 +116,13 @@ app = express()
         });
     });
   })
-  .get("/api/delete_book", function(request, response) {
+  .post("/api/delete_book", function(request, response) {
     pool.connect().then(client => {
       return client
         .query(
           `DELETE FROM public.books
 	              WHERE "bookID" = $1 RETURNING *;`,
-                ['bookid']
+          ["bookid"]
         )
         .then(res => {
           client.release();
