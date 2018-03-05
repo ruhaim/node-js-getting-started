@@ -29,6 +29,21 @@ app = express()
       });
     });
   })
+  .get("/api/get_books", function (request, response) {
+    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+      client.query("SELECT * FROM public.books", function (err, result) {
+        done();
+        if (err) {
+          console.error(err);
+          response.send("Error " + err);
+        } else {
+          //response.render("pages/db", { results: result.rows });
+          response.setHeader('Content-Type', 'application/json');
+          response.send(JSON.stringify({ result }));
+        }
+      });
+    });
+  })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 //SELECT * FROM public.books
