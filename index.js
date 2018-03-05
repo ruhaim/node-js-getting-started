@@ -101,7 +101,7 @@ app = express()
         .query(
           `UPDATE public.books
 	            SET "bookName"=$1, "bookAuthor"=$2, "bookYear"=$3, "bookPrice"=$4
-	            WHERE "bookID" = $5;`,
+	            WHERE "bookID" = $5 RETURNING "bookID";`,
           ["g", "ff", 45, 77, "id"]
         )
         .then(res => {
@@ -121,7 +121,7 @@ app = express()
       return client
         .query(
           `DELETE FROM public.books
-	              WHERE "bookID" = $1;`,
+	              WHERE "bookID" = $1 RETURNING *;`,
                 ['bookid']
         )
         .then(res => {
