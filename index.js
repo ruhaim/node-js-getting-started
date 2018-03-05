@@ -4,6 +4,13 @@ const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 
+const { Pool, Client } = require("pg");
+const connectionString = process.env.DATABASE_URL;
+
+const pool = new Pool({
+  connectionString: connectionString
+});
+
 app = express()
   .use(express.static(path.join(__dirname, "public")))
   .set("views", path.join(__dirname, "views"))
@@ -29,17 +36,76 @@ app = express()
       });
     });
   })
-  .get("/api/get_books", function (request, response) {
-    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
-      client.query("SELECT * FROM public.books", function (err, result) {
+  .get("/api/get_booksp", function (request, response) {
+    pool.query("SELECT * FROM public.books", (err, result)=>{
+      pool.end();
+      if (err) {
+        console.error(err);
+        response.send("Error " + err);
+      } else {
+        //response.render("pages/db", { results: result.rows });
+        response.setHeader("Content-Type", "application/json");
+        response.send(JSON.stringify({ result: result.rows }));
+      }
+    });
+
+  })
+  .get("/api/get_books", function(request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query("SELECT * FROM public.books", function(err, result) {
         done();
         if (err) {
           console.error(err);
           response.send("Error " + err);
         } else {
           //response.render("pages/db", { results: result.rows });
-          response.setHeader('Content-Type', 'application/json');
-          response.send(JSON.stringify({ result }));
+          response.setHeader("Content-Type", "application/json");
+          response.send(JSON.stringify({ result: result.rows }));
+        }
+      });
+    });
+  })
+  .get("/api/add_book", function(request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query("SELECT * FROM public.books", function(err, result) {
+        done();
+        if (err) {
+          console.error(err);
+          response.send("Error " + err);
+        } else {
+          //response.render("pages/db", { results: result.rows });
+          response.setHeader("Content-Type", "application/json");
+          response.send(JSON.stringify({ result: result.rows }));
+        }
+      });
+    });
+  })
+  .get("/api/edit_book", function(request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query("SELECT * FROM public.books", function(err, result) {
+        done();
+        if (err) {
+          console.error(err);
+          response.send("Error " + err);
+        } else {
+          //response.render("pages/db", { results: result.rows });
+          response.setHeader("Content-Type", "application/json");
+          response.send(JSON.stringify({ result: result.rows }));
+        }
+      });
+    });
+  })
+  .get("/api/delete_book", function(request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+      client.query("SELECT * FROM public.books", function(err, result) {
+        done();
+        if (err) {
+          console.error(err);
+          response.send("Error " + err);
+        } else {
+          //response.render("pages/db", { results: result.rows });
+          response.setHeader("Content-Type", "application/json");
+          response.send(JSON.stringify({ result: result.rows }));
         }
       });
     });
