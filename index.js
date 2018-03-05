@@ -79,7 +79,7 @@ app = express()
         .query(
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
-	              VALUES ($1, $2, $3, $4, $5) RETURNING bookID;`,
+	              VALUES ($1, $2, $3, $4, $5);`,
           ['some name', 'no name', 2016, 65.09, newUuid]
         )
         .then(res => {
