@@ -3,6 +3,8 @@ const express = require("express");
 const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
+const bodyParser = require('body-parser');
+const uuidv4 = require('uuid/v4');
 
 const { Pool, Client } = require("pg");
 const connectionString = process.env.DATABASE_URL;
@@ -13,6 +15,7 @@ const pool = new Pool({
 
 app = express()
   .use(express.static(path.join(__dirname, "public")))
+  .use(bodyParser.json())
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
@@ -70,11 +73,13 @@ app = express()
   })
   .get("/api/add_book", function(request, response) {
     pool.connect().then(client => {
+      console.log(request.body);
       return client
         .query(
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
-	              VALUES (?, ?, ?, ?, ?);`
+	              VALUES ($1, $2, $3, $4, $5);`,
+          ['some name', 'no name', 2016, 65.09, uuidv4()]
         )
         .then(res => {
           client.release();
@@ -88,13 +93,15 @@ app = express()
         });
     });
   })
-  .get("/api/edit_book", function(request, response) {
+  .post("/api/edit_book", function(request, response) {
     pool.connect().then(client => {
+      console.log(request.body);
       return client
         .query(
           `UPDATE public.books
-	            SET "bookName"=?, "bookAuthor"=?, "bookYear"=?, "bookPrice"=?, "bookID"=?
-	            WHERE <condition>;`
+	            SET "bookName"=$1, "bookAuthor"=$2, "bookYear"=$3, "bookPrice"=$4
+	            WHERE "bookID" = $5;`,
+          ["g", "ff", 45, 77, "id"]
         )
         .then(res => {
           client.release();
@@ -113,7 +120,8 @@ app = express()
       return client
         .query(
           `DELETE FROM public.books
-	              WHERE <condition>;`
+	              WHERE "bookID" = $1;`,
+                ['bookid']
         )
         .then(res => {
           client.release();
