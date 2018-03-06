@@ -128,7 +128,6 @@ app = express()
           client.release();
           console.error(e);
           response.status(400).send({ error: e });
-          throw Error(e);
         });
     });
   })
