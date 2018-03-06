@@ -1,6 +1,4 @@
-const cool = require("cool-ascii-faces");
 const express = require("express");
-const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
@@ -25,7 +23,7 @@ app = express()
   .get("/", (req, res) => res.render("pages/index"))
   .get("/auth/validate_access_token", (req, res, next) => {
     if (req.headers && req.headers.access_token === JWT_SECRET) {
-      res.send(200, "SUCESS");
+      res.send(200, "SUCCESS");
     } else {
       res.send(400, "Missing or Invalid token");
     }
