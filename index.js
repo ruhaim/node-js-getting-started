@@ -48,17 +48,18 @@ app = express()
     pool.connect().then(client => {
       const newUuid = uuidv4();
       console.log(request.body);
+      var book = request.body.book;
       return client
         .query(
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
 	              VALUES ($1, $2, $3, $4, $5);`,
-          ["some name", "no name", 2016, 65.09, newUuid]
+          [book.bookName, book.bookAuthor, book.bookYear, book.bookPrice, book.bookID]
         )
         .then(res => {
           client.release();
           response.setHeader("Content-Type", "application/json");
-          response.send(JSON.stringify({ result: newUuid }));
+          response.send(JSON.stringify({ result: book.bookID }));
         })
         .catch(e => {
           client.release();
@@ -92,11 +93,12 @@ app = express()
   })
   .post("/api/delete_book", function(request, response) {
     pool.connect().then(client => {
+      var bookID = request.body.bookID;
       return client
         .query(
           `DELETE FROM public.books
 	              WHERE "bookID" = $1 RETURNING *;`,
-          ["bookid"]
+          [bookID]
         )
         .then(res => {
           client.release();
