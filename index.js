@@ -20,18 +20,14 @@ app = express()
   .use(express.static(path.join(__dirname, "public")))
   .use(bodyParser.json())
   .use(cors())
-  //.use(jwt({ secret: JWT_SECRET}))
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
   .use("/api", (req, res, next) => {
-    console.log(req.headers);
     if (req.headers && req.headers.access_token == JWT_SECRET) {
-      console.log("token found", req);
-
       next();
     } else {
-      res.send(400, "missing or invalid token");
+      res.send(400, "Missing or Invalid token");
     }
   })
   .get("/api/get_books", function(request, response) {
