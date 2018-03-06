@@ -70,12 +70,13 @@ app = express()
   .post("/api/edit_book", function(request, response) {
     pool.connect().then(client => {
       console.log(request.body);
+      var book = request.body.book;
       return client
         .query(
           `UPDATE public.books
 	            SET "bookName"=$1, "bookAuthor"=$2, "bookYear"=$3, "bookPrice"=$4
 	            WHERE "bookID" = $5 RETURNING "bookID";`,
-          ["g", "ff", 45, 77, "id"]
+          [book.bookName, book.bookAuthor, book.bookYear, book.bookPrice, book.bookID]
         )
         .then(res => {
           client.release();
