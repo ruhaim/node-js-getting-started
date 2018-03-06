@@ -4,7 +4,7 @@ const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
-const cors = require('cors');
+//const cors = require("cors");
 const uuidv4 = require("uuid/v4");
 
 const { Pool, Client } = require("pg");
@@ -17,7 +17,14 @@ const pool = new Pool({
 app = express()
   .use(express.static(path.join(__dirname, "public")))
   .use(bodyParser.json())
-  .use(cors())
+  .use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  })
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
@@ -103,4 +110,3 @@ app = express()
     });
   })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
-
