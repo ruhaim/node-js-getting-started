@@ -25,11 +25,14 @@ app = express()
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
   .use("/api", (req, res, next) => {
-    console.log(req);
-    //if(req.body.access_token == JWT_SECRET){
-    //console.log("token found", req);
+    console.log(req.headers);
+    if (req.headers && req.headers.access_token == JWT_SECRET) {
+      console.log("token found", req);
 
-    next();
+      next();
+    } else {
+      res.send(400, "missing or invalid token");
+    }
   })
   .get("/api/get_books", function(request, response) {
     pool.connect().then(client => {
