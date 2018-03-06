@@ -4,11 +4,13 @@ const pg = require("pg");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
-//const cors = require("cors");
+const cors = require("cors");
+const jwt = require("express-jwt");
 const uuidv4 = require("uuid/v4");
 
 const { Pool, Client } = require("pg");
 const connectionString = process.env.DATABASE_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const pool = new Pool({
   connectionString: connectionString
@@ -17,17 +19,18 @@ const pool = new Pool({
 app = express()
   .use(express.static(path.join(__dirname, "public")))
   .use(bodyParser.json())
-  .use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    next();
-  })
+  .use(cors())
+  //.use(jwt({ secret: JWT_SECRET}))
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
+  .use("/api", (req, res, next) => {
+    console.log(req);
+    //if(req.body.access_token == JWT_SECRET){
+    //console.log("token found", req);
+
+    next();
+  })
   .get("/api/get_books", function(request, response) {
     pool.connect().then(client => {
       return client
@@ -54,7 +57,13 @@ app = express()
           `INSERT INTO public.books(
 	              "bookName", "bookAuthor", "bookYear", "bookPrice", "bookID")
 	              VALUES ($1, $2, $3, $4, $5);`,
-          [book.bookName, book.bookAuthor, book.bookYear, book.bookPrice, book.bookID]
+          [
+            book.bookName,
+            book.bookAuthor,
+            book.bookYear,
+            book.bookPrice,
+            book.bookID
+          ]
         )
         .then(res => {
           client.release();
@@ -77,7 +86,13 @@ app = express()
           `UPDATE public.books
 	            SET "bookName"=$1, "bookAuthor"=$2, "bookYear"=$3, "bookPrice"=$4
 	            WHERE "bookID" = $5 RETURNING "bookID";`,
-          [book.bookName, book.bookAuthor, book.bookYear, book.bookPrice, book.bookID]
+          [
+            book.bookName,
+            book.bookAuthor,
+            book.bookYear,
+            book.bookPrice,
+            book.bookID
+          ]
         )
         .then(res => {
           client.release();
