@@ -23,7 +23,7 @@ app = express()
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
-  .get("api/validate_access_token", (req, res, next) => {
+  .get("auth/validate_access_token", (req, res, next) => {
     if (req.body && req.body.access_token === JWT_SECRET) {
       res.send(200, "SUCESS");
     } else {
