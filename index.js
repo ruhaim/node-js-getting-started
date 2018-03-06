@@ -24,7 +24,7 @@ app = express()
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
   .get("/auth/validate_access_token", (req, res, next) => {
-    if (req.body && req.body.access_token === JWT_SECRET) {
+    if (req.headers && req.headers.access_token === JWT_SECRET) {
       res.send(200, "SUCESS");
     } else {
       res.send(400, "Missing or Invalid token");
