@@ -25,14 +25,14 @@ app = express()
     if (req.headers && req.headers.access_token === JWT_SECRET) {
       res.send(200, { result: "SUCCESS" });
     } else {
-      res.send(400, { result: "Missing or Invalid token" });
+      res.status(400).send({ error: "Missing or Invalid token" });
     }
   })
   .use("/api", (req, res, next) => {
     if (req.headers && req.headers.access_token === JWT_SECRET) {
       next();
     } else {
-      res.send(400, "Missing or Invalid token");
+      res.status(400).send({ error: "Missing or Invalid token" });
     }
   })
   .get("/api/get_books", function(request, response) {
@@ -47,7 +47,7 @@ app = express()
         .catch(e => {
           client.release();
           console.error(e);
-          response.send("Error " + e);
+          res.status(400).send({ error: "Missing or Invalid token" });
         });
     });
   })
@@ -77,7 +77,7 @@ app = express()
         .catch(e => {
           client.release();
           console.error(e);
-          response.send("Error " + e);
+          response.status(400).send({ error: e });
         });
     });
   })
@@ -106,7 +106,7 @@ app = express()
         .catch(e => {
           client.release();
           console.error(e);
-          response.send("Error " + e);
+          response.status(400).send({ error: e });
         });
     });
   })
@@ -127,7 +127,7 @@ app = express()
         .catch(e => {
           client.release();
           console.error(e);
-          response.send("Error " + e);
+          response.status(400).send({ error: e });
         });
     });
   })
